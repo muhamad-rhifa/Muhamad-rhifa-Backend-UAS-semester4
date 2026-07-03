@@ -92,5 +92,25 @@ export const API = {
       console.error(error);
       return [];
     }
+  },
+
+  async updateUser(email, userData) {
+    const res = await fetch(`${BASE_URL}/users/${encodeURIComponent(email)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Update failed');
+    return data;
+  },
+
+  async deleteUser(email) {
+    const res = await fetch(`${BASE_URL}/users/${encodeURIComponent(email)}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Delete failed');
+    return data;
   }
 };

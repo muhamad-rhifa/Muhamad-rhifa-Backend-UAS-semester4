@@ -220,6 +220,39 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+// Update user
+app.put('/api/users/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { name, role, password } = req.body;
+    
+    if (password) {
+      await pool.query('UPDATE users SET name = ?, role = ?, password = ? WHERE email = ?', [name, role, password, email]);
+    } else {
+      await pool.query('UPDATE users SET name = ?, role = ? WHERE email = ?', [name, role, email]);
+    }
+    res.json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating user', error: String(error) });
+  }
+});
+
+// Delete user
+app.delete('/api/users/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (email === 'admin@rzstore.com') {
+      return res.status(403).json({ message: 'Admin utama tidak bisa dihapus.' });
+    }
+    await pool.query('DELETE FROM users WHERE email = ?', [email]);
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting user', error: String(error) });
+  }
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

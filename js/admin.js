@@ -323,19 +323,47 @@ export async function renderUsersTable() {
       <td class="py-3 px-4 text-sm text-gray-500 dark:text-slate-400">${formatDate(u.createdAt)}</td>
       <td class="py-3 px-4">
         <div class="flex gap-2">
-          <span class="text-xs text-gray-400 italic">Terkunci (Database)</span>
+          <button class="edit-user-btn px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-lg hover:bg-indigo-200 transition" data-user='${JSON.stringify(u).replace(/'/g, "&apos;")}'>
+            <i class="fas fa-edit mr-1"></i>Edit
+          </button>
+          <button class="delete-user-btn px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-semibold rounded-lg hover:bg-red-200 transition" data-email="${u.email}" ${u.email === 'admin@rzstore.com' ? 'disabled title="Admin utama tidak bisa dihapus"' : ''}>
+            <i class="fas fa-trash mr-1"></i>Hapus
+          </button>
         </div>
       </td>
     </tr>
   `).join('');
+
+  // Wire edit buttons
+  tbody.querySelectorAll('.edit-user-btn').forEach(btn => {
+    btn.addEventListener('click', () => openUserModal(JSON.parse(btn.dataset.user)));
+  });
+
+  // Wire delete buttons
+  tbody.querySelectorAll('.delete-user-btn:not([disabled])').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const email = btn.dataset.email;
+      if (!confirm(`Hapus pengguna ${email}?`)) return;
+      const session = Session.get();
+      if (session?.email === email) {
+        Toast.show('Tidak bisa menghapus akun yang sedang login.', 'error');
+        return;
+      }
+      try {
+        await API.deleteUser(email);
+        Toast.show('Pengguna berhasil dihapus.', 'success');
+        renderUsersTable();
+      } catch (error) {
+        Toast.show(error.message, 'error');
+      }
+    });
+  });
 }
 
 // ============================================================
 // User Edit Modal
 // ============================================================
-function openUserModal(email) {
-  const users = Storage.get('rz_users') || [];
-  const user  = users.find(u => u.email === email);
+function openUserModal(user) {
   if (!user) return;
 
   const modal = document.getElementById('user-modal');
@@ -359,7 +387,7 @@ function openUserModal(email) {
   const form = document.getElementById('user-form');
   const newForm = form?.cloneNode(true);
   form?.parentNode?.replaceChild(newForm, form);
-  document.getElementById('user-form')?.addEventListener('submit', e => {
+  document.getElementById('user-form')?.addEventListener('submit', async e => {
     e.preventDefault();
     const newName  = document.getElementById('uf-name')?.value.trim();
     const newPhone = document.getElementById('uf-phone')?.value.trim();
@@ -368,24 +396,25 @@ function openUserModal(email) {
 
     if (!newName) { Toast.show('Nama tidak boleh kosong.', 'error'); return; }
 
-    const allUsers = Storage.get('rz_users') || [];
-    const idx = allUsers.findIndex(u => u.email === email);
-    if (idx !== -1) {
-      allUsers[idx].name  = newName;
-      allUsers[idx].phone = newPhone;
-      if (!document.getElementById('uf-role')?.disabled) allUsers[idx].role = newRole;
-      if (newPw && newPw.length >= 6) allUsers[idx].password = newPw;
-      Storage.set('rz_users', allUsers);
-
+    try {
+      await API.updateUser(user.email, {
+        name: newName,
+        phone: newPhone,
+        role: roleEl?.disabled ? user.role : newRole,
+        password: (newPw && newPw.length >= 6) ? newPw : undefined
+      });
+      
       // Update session if editing self
-      if (session?.email === email) {
+      if (session?.email === user.email) {
         Storage.set('rz_session', { ...session, name: newName, phone: newPhone });
       }
-    }
 
-    modal.classList.add('hidden');
-    Toast.show('Data pengguna berhasil diperbarui.', 'success');
-    renderUsersTable();
+      modal.classList.add('hidden');
+      Toast.show('Data pengguna berhasil diperbarui.', 'success');
+      renderUsersTable();
+    } catch (error) {
+      Toast.show(error.message, 'error');
+    }
   });
 }
 
