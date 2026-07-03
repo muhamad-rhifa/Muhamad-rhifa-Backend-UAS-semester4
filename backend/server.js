@@ -40,7 +40,7 @@ app.get('/api/products', async (req, res) => {
     res.json(rows);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching products', error: error.message });
+    res.status(500).json({ message: 'Error fetching products', error: String(error) });
   }
 });
 
@@ -163,7 +163,7 @@ app.post('/api/checkout', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error processing checkout', error: error.message });
+    res.status(500).json({ message: 'Error processing checkout', error: String(error) });
   }
 });
 
@@ -187,7 +187,7 @@ app.post('/api/users/register', async (req, res) => {
     res.status(201).json({ message: 'Registrasi berhasil', id });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error registering user', error: error.message });
+    res.status(500).json({ message: 'Error registering user', error: String(error) });
   }
 });
 
@@ -204,7 +204,7 @@ app.post('/api/users/login', async (req, res) => {
     res.json(rows[0]);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error logging in', error: error.message });
+    res.status(500).json({ message: 'Error logging in', error: String(error) });
   }
 });
 
@@ -215,7 +215,7 @@ app.get('/api/users', async (req, res) => {
     res.json(rows);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching users', error: error.message });
+    res.status(500).json({ message: 'Error fetching users', error: String(error) });
   }
 });
 
