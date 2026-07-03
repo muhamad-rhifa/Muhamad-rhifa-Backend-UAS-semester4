@@ -89,9 +89,9 @@ export function renderProductCard(product, options = {}) {
         <div class="flex text-xs">${renderStars(product.rating)}</div>
         <span class="text-xs text-gray-500 dark:text-slate-400">(${product.rating})</span>
       </div>
-      <div class="mt-auto flex items-center justify-between gap-2">
-        <span class="text-base font-bold text-indigo-600 dark:text-indigo-400">${formatPrice(product.price)}</span>
-        <button class="add-to-cart-btn flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500
+      <div class="mt-auto flex flex-col xl:flex-row xl:items-center justify-between gap-2">
+        <span class="text-sm sm:text-base font-bold text-indigo-600 dark:text-indigo-400">${formatPrice(product.price)}</span>
+        <button class="add-to-cart-btn w-full xl:w-auto flex justify-center items-center flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500
           ${outOfStock
             ? 'bg-gray-100 dark:bg-slate-700 text-gray-400 cursor-not-allowed'
             : 'bg-indigo-600 hover:bg-indigo-700 text-white'}"

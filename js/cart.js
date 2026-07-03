@@ -104,27 +104,31 @@ export function initCartPage() {
 
     cart.forEach(item => {
       const row = document.createElement('div');
-      row.className = 'flex items-center gap-4 py-4 border-b border-gray-100 dark:border-slate-700 last:border-0';
+      row.className = 'flex flex-col sm:flex-row sm:items-center gap-4 py-4 border-b border-gray-100 dark:border-slate-700 last:border-0';
       row.innerHTML = `
-        <a href="product.html?id=${item.productId}" class="flex-shrink-0">
-          <img src="${item.image}" alt="${item.name}"
-            class="w-20 h-20 object-cover rounded-xl border border-gray-200 dark:border-slate-600"
-            onerror="this.src='https://placehold.co/80x80/e5e7eb/9ca3af?text=?'" />
-        </a>
-        <div class="flex-1 min-w-0">
-          <a href="product.html?id=${item.productId}" class="text-sm font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 line-clamp-2">${item.name}</a>
-          <p class="text-sm text-indigo-600 dark:text-indigo-400 font-bold mt-0.5">${formatPrice(item.price)}</p>
+        <div class="flex items-center gap-4 flex-1">
+          <a href="product.html?id=${item.productId}" class="flex-shrink-0">
+            <img src="${item.image}" alt="${item.name}"
+              class="w-20 h-20 object-cover rounded-xl border border-gray-200 dark:border-slate-600"
+              onerror="this.src='https://placehold.co/80x80/e5e7eb/9ca3af?text=?'" />
+          </a>
+          <div class="flex-1 min-w-0">
+            <a href="product.html?id=${item.productId}" class="text-sm font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 line-clamp-2">${item.name}</a>
+            <p class="text-sm text-indigo-600 dark:text-indigo-400 font-bold mt-0.5">${formatPrice(item.price)}</p>
+          </div>
         </div>
-        <div class="flex items-center border border-gray-300 dark:border-slate-600 rounded-xl overflow-hidden flex-shrink-0">
-          <button class="qty-btn w-8 h-8 flex items-center justify-center text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition font-bold" data-id="${item.productId}" data-delta="-1">−</button>
-          <span class="w-8 text-center text-sm font-semibold text-gray-900 dark:text-white">${item.quantity}</span>
-          <button class="qty-btn w-8 h-8 flex items-center justify-center text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition font-bold" data-id="${item.productId}" data-delta="1">+</button>
-        </div>
-        <div class="text-right flex-shrink-0 min-w-[80px]">
-          <p class="text-sm font-bold text-gray-900 dark:text-white">${formatPrice(item.price * item.quantity)}</p>
-          <button class="remove-btn text-xs text-red-400 hover:text-red-600 mt-1 transition" data-id="${item.productId}">
-            <i class="fas fa-trash-alt mr-1"></i>Hapus
-          </button>
+        <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-2 sm:mt-0">
+          <div class="flex items-center border border-gray-300 dark:border-slate-600 rounded-xl overflow-hidden flex-shrink-0">
+            <button class="qty-btn w-8 h-8 flex items-center justify-center text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition font-bold" data-id="${item.productId}" data-delta="-1">−</button>
+            <span class="w-8 text-center text-sm font-semibold text-gray-900 dark:text-white">${item.quantity}</span>
+            <button class="qty-btn w-8 h-8 flex items-center justify-center text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition font-bold" data-id="${item.productId}" data-delta="1">+</button>
+          </div>
+          <div class="text-right flex-shrink-0 min-w-[80px]">
+            <p class="text-sm font-bold text-gray-900 dark:text-white">${formatPrice(item.price * item.quantity)}</p>
+            <button class="remove-btn text-xs text-red-400 hover:text-red-600 mt-1 transition" data-id="${item.productId}">
+              <i class="fas fa-trash-alt mr-1"></i>Hapus
+            </button>
+          </div>
         </div>
       `;
       itemsContainer.appendChild(row);
