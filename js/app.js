@@ -127,12 +127,28 @@ const DARK_CSS = `
   td, th { border-color: #334155 !important; color: #cbd5e1 !important; }
 `;
 
+const MOBILE_FIX_CSS = `
+  @media (max-width: 767px) {
+    #user-name, #login-btn, #logout-btn { display: none !important; }
+  }
+`;
+
 function _injectDarkStyle() {
-  if (document.getElementById(DARK_STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = DARK_STYLE_ID;
-  style.textContent = DARK_CSS;
-  document.head.appendChild(style);
+  if (!document.getElementById(DARK_STYLE_ID)) {
+    const style = document.createElement('style');
+    style.id = DARK_STYLE_ID;
+    style.textContent = DARK_CSS;
+    document.head.appendChild(style);
+  }
+}
+
+function _injectMobileFix() {
+  if (!document.getElementById('rz-mobile-fix')) {
+    const style = document.createElement('style');
+    style.id = 'rz-mobile-fix';
+    style.textContent = MOBILE_FIX_CSS;
+    document.head.appendChild(style);
+  }
 }
 
 function _removeDarkStyle() {
@@ -269,6 +285,7 @@ export function updateCartBadge() {
 // Navbar
 // ============================================================
 export function initNavbar() {
+  _injectMobileFix();
   initDarkMode();
   wireDarkToggle(); // wire tombol setelah DOM ready
   updateCartBadge();
