@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../')));
 
 // Database connection pool
-const pool = mysql.createPool({
+const dbConfig = process.env.MYSQL_URL || {
   host: process.env.MYSQLHOST || process.env.DB_HOST,
   user: process.env.MYSQLUSER || process.env.DB_USER,
   password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD,
@@ -24,7 +24,8 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
-});
+};
+const pool = mysql.createPool(dbConfig);
 
 // Helper function to generate unique IDs
 const generateId = (prefix) => {
