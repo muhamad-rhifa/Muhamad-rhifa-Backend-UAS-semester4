@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:3000/api'; // Change this to Railway URL when deployed
+export const BASE_URL = 'https://muhamad-rhifa-backend-uas-semester4-production.up.railway.app/api';
 
 export const API = {
   async getProducts() {
