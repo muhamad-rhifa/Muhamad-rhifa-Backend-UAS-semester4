@@ -25,6 +25,19 @@ CREATE TABLE IF NOT EXISTS orders (
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS users (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'customer',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT IGNORE INTO users (id, name, email, password, role) VALUES 
+('user_admin', 'Admin RZStore', 'admin@rzstore.com', 'admin123', 'admin'),
+('user_demo', 'Demo User', 'demo@rzstore.com', '123456', 'customer');
+
 -- Seed Data (Initial Products)
 INSERT INTO products (id, name, category, price, image, stock, rating, description, featured, tags, createdAt) VALUES
 ('prod_001', 'Classic Oversized Hoodie', 'Hoodie', 349000, 'assets/images/prod_001.png', 45, 4.8, 'Hoodie oversized premium dengan bahan fleece tebal yang nyaman. Cocok untuk aktivitas sehari-hari maupun santai di rumah.', true, '["casual", "oversized", "fleece", "unisex", "winter"]', '2025-01-10 08:00:00'),

@@ -166,6 +166,58 @@ app.post('/api/checkout', async (req, res) => {
   }
 });
 
+// --- Users API ---
+
+// Register User
+app.post('/api/users/register', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    
+    // Check if email exists
+    const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+    if (existing.length > 0) {
+      return res.status(400).json({ message: 'Email sudah terdaftar.' });
+    }
+
+    const id = generateId('user');
+    const query = `INSERT INTO users (id, name, email, password, role) VALUES (?, ?, ?, ?, 'customer')`;
+    await pool.query(query, [id, name, email, password]);
+    
+    res.status(201).json({ message: 'Registrasi berhasil', id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error registering user', error: error.message });
+  }
+});
+
+// Login User
+app.post('/api/users/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const [rows] = await pool.query('SELECT id, name, email, role, createdAt FROM users WHERE email = ? AND password = ?', [email, password]);
+    
+    if (rows.length === 0) {
+      return res.status(401).json({ message: 'Email atau password salah.' });
+    }
+    
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error logging in', error: error.message });
+  }
+});
+
+// Get all users (For Admin)
+app.get('/api/users', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT id, name, email, role, createdAt FROM users ORDER BY createdAt DESC');
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching users', error: error.message });
+  }
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

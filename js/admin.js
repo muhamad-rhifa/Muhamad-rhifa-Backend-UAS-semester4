@@ -1,6 +1,7 @@
 // RZStore — Admin Module (admin.js)
 import { Storage, Session, Toast, formatPrice, formatDate, generateId } from './app.js';
 import { requireAdmin } from './auth.js';
+import { API } from './api.js';
 
 const STATUS_LABELS = {
   pending:    'Menunggu',
@@ -13,7 +14,7 @@ const STATUS_LABELS = {
 // ============================================================
 // Section Switching
 // ============================================================
-function showSection(name) {
+async function showSection(name) {
   ['dashboard', 'products', 'orders', 'users'].forEach(s => {
     document.getElementById(`section-${s}`)?.classList.add('hidden');
     document.querySelector(`[data-nav="${s}"]`)?.classList.remove('bg-indigo-600', 'text-white');
@@ -24,19 +25,19 @@ function showSection(name) {
   activeBtn?.classList.add('bg-indigo-600', 'text-white');
   activeBtn?.classList.remove('text-gray-700', 'dark:text-slate-300');
 
-  if (name === 'dashboard') renderDashboard();
+  if (name === 'dashboard') await renderDashboard();
   if (name === 'products')  renderProductsTable();
   if (name === 'orders')    renderOrdersTable();
-  if (name === 'users')     renderUsersTable();
+  if (name === 'users')     await renderUsersTable();
 }
 
 // ============================================================
 // Dashboard
 // ============================================================
-export function renderDashboard() {
+export async function renderDashboard() {
   const products = Storage.get('rz_products') || [];
   const orders   = Storage.get('rz_orders')   || [];
-  const users    = Storage.get('rz_users')    || [];
+  const users    = await API.getUsers();
   const revenue  = orders.reduce((s, o) => s + (o.total || 0), 0);
 
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -293,8 +294,8 @@ export function renderOrdersTable() {
 // ============================================================
 // Users Table
 // ============================================================
-export function renderUsersTable() {
-  const users = Storage.get('rz_users') || [];
+export async function renderUsersTable() {
+  const users = await API.getUsers();
   const tbody = document.getElementById('admin-users-tbody');
   if (!tbody) return;
 
@@ -322,37 +323,11 @@ export function renderUsersTable() {
       <td class="py-3 px-4 text-sm text-gray-500 dark:text-slate-400">${formatDate(u.createdAt)}</td>
       <td class="py-3 px-4">
         <div class="flex gap-2">
-          <button class="edit-user-btn px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-lg hover:bg-indigo-200 transition" data-email="${u.email}">
-            <i class="fas fa-edit mr-1"></i>Edit
-          </button>
-          <button class="delete-user-btn px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-semibold rounded-lg hover:bg-red-200 transition" data-email="${u.email}" ${u.email === 'admin@rzstore.com' ? 'disabled title="Admin utama tidak bisa dihapus"' : ''}>
-            <i class="fas fa-trash mr-1"></i>Hapus
-          </button>
+          <span class="text-xs text-gray-400 italic">Terkunci (Database)</span>
         </div>
       </td>
     </tr>
   `).join('');
-
-  // Wire edit buttons
-  tbody.querySelectorAll('.edit-user-btn').forEach(btn => {
-    btn.addEventListener('click', () => openUserModal(btn.dataset.email));
-  });
-
-  // Wire delete buttons
-  tbody.querySelectorAll('.delete-user-btn:not([disabled])').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (!confirm(`Hapus pengguna ${btn.dataset.email}?`)) return;
-      const session = Session.get();
-      if (session?.email === btn.dataset.email) {
-        Toast.show('Tidak bisa menghapus akun yang sedang login.', 'error');
-        return;
-      }
-      const updated = (Storage.get('rz_users') || []).filter(u => u.email !== btn.dataset.email);
-      Storage.set('rz_users', updated);
-      Toast.show('Pengguna berhasil dihapus.', 'success');
-      renderUsersTable();
-    });
-  });
 }
 
 // ============================================================

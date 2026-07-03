@@ -59,5 +59,38 @@ export const API = {
     });
     if (!res.ok) throw new Error('Checkout failed');
     return await res.json();
+  },
+
+  async registerUser(userData) {
+    const res = await fetch(`${BASE_URL}/users/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Register failed');
+    return data;
+  },
+
+  async loginUser(credentials) {
+    const res = await fetch(`${BASE_URL}/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Login failed');
+    return data;
+  },
+
+  async getUsers() {
+    try {
+      const res = await fetch(`${BASE_URL}/users`);
+      if (!res.ok) throw new Error('Failed to fetch users');
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
   }
 };

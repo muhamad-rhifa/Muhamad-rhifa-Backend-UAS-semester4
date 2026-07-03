@@ -1,5 +1,6 @@
 // RZStore — Auth Module (auth.js)
 import { Storage, Session, Toast, generateId } from './app.js';
+import { API } from './api.js';
 
 // ============================================================
 // Auth Guards
@@ -21,34 +22,7 @@ export function requireAdmin() {
 // Seed Default Users (dipanggil langsung, tidak bergantung fetch)
 // ============================================================
 function ensureDefaultUsers() {
-  const users = Storage.get('rz_users') || [];
-  const hasAdmin = users.some(u => u.email === 'admin@rzstore.com');
-  const hasDemo  = users.some(u => u.email === 'demo@rzstore.com');
-
-  let changed = false;
-  if (!hasAdmin) {
-    users.push({
-      id: 'user_admin',
-      name: 'Admin RZStore',
-      email: 'admin@rzstore.com',
-      password: 'admin123',
-      role: 'admin',
-      createdAt: new Date().toISOString()
-    });
-    changed = true;
-  }
-  if (!hasDemo) {
-    users.push({
-      id: 'user_demo',
-      name: 'Demo User',
-      email: 'demo@rzstore.com',
-      password: '123456',
-      role: 'customer',
-      createdAt: new Date().toISOString()
-    });
-    changed = true;
-  }
-  if (changed) Storage.set('rz_users', users);
+  // Database seed is handled via database.sql directly.
 }
 
 
@@ -61,7 +35,7 @@ function validateEmail(email) {
 }
 
 function isEmailTaken(email, users) {
-  return users.some(u => u.email.toLowerCase() === email.toLowerCase());
+  return false; // Handled by API now
 }
 
 function showError(fieldId, message) {
@@ -133,7 +107,7 @@ export function initLoginPage() {
 
   // ---- Login Form ----
   const loginForm = document.getElementById('login-form');
-  loginForm?.addEventListener('submit', (e) => {
+  loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearAllErrors(['login-email-error', 'login-password-error', 'login-general-error']);
 
@@ -145,22 +119,19 @@ export function initLoginPage() {
     if (!password) { showError('login-password-error', 'Password wajib diisi.'); valid = false; }
     if (!valid) return;
 
-    const users = Storage.get('rz_users') || [];
-    const user  = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-
-    if (!user) {
-      showError('login-general-error', 'Email atau password salah. Periksa kembali email dan password kamu.');
-      return;
+    try {
+      const user = await API.loginUser({ email, password });
+      Session.set(user);
+      Toast.show(`Selamat datang, ${user.name}!`, 'success');
+      setTimeout(() => { window.location.href = 'index.html'; }, 800);
+    } catch (error) {
+      showError('login-general-error', error.message || 'Email atau password salah. Periksa kembali email dan password kamu.');
     }
-
-    Session.set(user);
-    Toast.show(`Selamat datang, ${user.name}!`, 'success');
-    setTimeout(() => { window.location.href = 'index.html'; }, 800);
   });
 
   // ---- Register Form ----
   const registerForm = document.getElementById('register-form');
-  registerForm?.addEventListener('submit', (e) => {
+  registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearAllErrors(['reg-name-error', 'reg-email-error', 'reg-password-error', 'reg-general-error']);
 
@@ -176,25 +147,13 @@ export function initLoginPage() {
     else if (!validatePassword(password)) { showError('reg-password-error', 'Password minimal 6 karakter.'); valid = false; }
     if (!valid) return;
 
-    const users = Storage.get('rz_users') || [];
-    if (isEmailTaken(email, users)) {
-      showError('reg-email-error', 'Email sudah terdaftar.');
-      return;
+    try {
+      await API.registerUser({ name, email, password });
+      Toast.show('Registrasi berhasil! Silakan login.', 'success');
+      registerForm.reset();
+      showLogin();
+    } catch (error) {
+      showError('reg-email-error', error.message || 'Registrasi gagal.');
     }
-
-    const newUser = {
-      id: generateId('user'),
-      name,
-      email,
-      password,
-      role: 'customer',
-      createdAt: new Date().toISOString()
-    };
-    users.push(newUser);
-    Storage.set('rz_users', users);
-
-    Toast.show('Registrasi berhasil! Silakan login.', 'success');
-    registerForm.reset();
-    showLogin();
   });
 }
