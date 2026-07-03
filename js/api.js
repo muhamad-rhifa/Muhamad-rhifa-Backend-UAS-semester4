@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://muhamad-rhifa-backend-uas-semester4-production.up.railway.app/api';
+export const BASE_URL = 'https://muhamad-rhifa-frontend-uas-semester4-production.up.railway.app/api';
 
 export const API = {
   async getProducts() {
