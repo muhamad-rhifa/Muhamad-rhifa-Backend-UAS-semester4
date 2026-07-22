@@ -1,4 +1,4 @@
-﻿[
+[
   {
     "id": "prod_001",
     "name": "Classic Oversized Hoodie",
@@ -238,7 +238,7 @@
     "name": "Fleece Pullover Hoodie",
     "category": "Hoodie",
     "price": 369000,
-    "image": "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&h=600&fit=crop&q=80",
+    "image": "assets/images/prod_019.png",
     "stock": 38,
     "rating": 4.7,
     "description": "Pullover hoodie dengan bahan fleece premium yang sangat lembut. Desain minimalis yang cocok untuk berbagai gaya.",
@@ -251,7 +251,7 @@
     "name": "Slim Straight Jeans",
     "category": "Pants",
     "price": 449000,
-    "image": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&h=600&fit=crop&q=80",
+    "image": "assets/images/prod_020.png",
     "stock": 42,
     "rating": 4.8,
     "description": "Jeans slim straight dengan bahan denim premium yang nyaman dan tahan lama.",
@@ -264,7 +264,7 @@
     "name": "Puffer Jacket Winter",
     "category": "Jacket",
     "price": 699000,
-    "image": "https://images.unsplash.com/photo-1608063615781-e2ef8c73d114?w=600&h=600&fit=crop&q=80",
+    "image": "assets/images/prod_021.png",
     "stock": 20,
     "rating": 4.9,
     "description": "Puffer jacket dengan insulasi premium yang sangat hangat. Desain modern yang stylish.",
@@ -277,7 +277,7 @@
     "name": "Henley Shirt",
     "category": "T-Shirt",
     "price": 219000,
-    "image": "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&h=600&fit=crop&q=80",
+    "image": "assets/images/prod_022.png",
     "stock": 65,
     "rating": 4.5,
     "description": "Henley shirt dengan detail kancing di bagian leher. Bahan cotton waffle yang unik dan nyaman.",
